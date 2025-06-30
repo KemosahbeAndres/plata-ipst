@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "homepage": "https://kemosahbeandres.github.io/plata-ipst/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
