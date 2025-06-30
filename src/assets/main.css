@@ -1,10 +1,20 @@
 @import './base.css';
 
 #app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 100vw;
   font-weight: normal;
+}
+
+.login-container {
+  display: grid;
+  gap: 0.5em;
+  grid-template-columns: 1fr 2fr;
+  height: 100vh;
+}
+
+.login-container .img-login {
+  width: 100%;
+  overflow: hidden;
 }
 
 a,
@@ -27,9 +37,4 @@ a,
     place-items: center;
   }
 
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
 }
