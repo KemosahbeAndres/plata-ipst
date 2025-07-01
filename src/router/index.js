@@ -18,39 +18,32 @@ const router = createRouter({
       component: () => import('../views/CalendarView.vue'),
       meta: { requireAuth: true }
     },
+    {
+      path: '/users',
+      name: 'users',
+      component: () => import('../views/UsersView.vue'),
+      meta: { requireAuth: true, requiresAdmin: true }
+    }
   ],
 })
 
-// Middleware para proteger rutas
-let isAuthResolved = false
-
-auth.onAuthStateChanged(() => {
-  isAuthResolved = true
-})
-
 router.beforeEach((to, from, next) => {
-  const user = auth.currentUser
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const requiresGuest = to.matched.some(record => record.meta.requiresGuest)
+  const user = JSON.parse(sessionStorage.getItem('user'))
 
-  if (requiresAuth && !user) {
-    next('/')
-  } else if (requiresGuest && user) {
-    next('/calendar')
-  } else {
-    next()
+  if (to.meta.requiresAuth && !user) {
+    return next('/')
   }
 
-  if (!isAuthResolved) {
-    const unwatch = auth.onAuthStateChanged(() => {
-      unwatch()
-      check()
-    })
-  } else {
-    check()
+  if (to.meta.requiresGuest && user) {
+    return next('/calendar')
   }
+
+  if (to.meta.requiresAdmin && user?.rol !== 'administrador') {
+    return next('/calendar')
+  }
+
+  return next()
 })
-
 
 
 export default router

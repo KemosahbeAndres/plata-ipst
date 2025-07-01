@@ -17,6 +17,8 @@ import { ref } from 'vue'
 import { auth } from '../firebase/config'
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import { useRouter } from 'vue-router'
+import { db } from '../firebase/config'
+import { collection, getDocs, query, updateDoc, where } from 'firebase/firestore'
 
 const email = ref('')
 const password = ref('')
@@ -24,8 +26,21 @@ const router = useRouter()
 
 const login = async () => {
   try {
-    await signInWithEmailAndPassword(auth, email.value, password.value)
-    router.push('/calendar')
+    const q = query(collection(db, 'usuarios'), where('usuario', '==', email.value), where('clave', '==', password.value))
+    const snapshot = await getDocs(q)
+    if (!snapshot.empty) {
+      const docRef = snapshot.docs[0].ref
+      const perfil = snapshot.docs[0].data()
+
+      const token = crypto.randomUUID()
+      await updateDoc(docRef, { tokenSesion: token})
+
+      sessionStorage.setItem('user', JSON.stringify({ ...perfil, token }))
+      router.push('/calendar')
+    } else {
+      alert('Credenciales incorrectas')
+    }
+    
   } catch (err) {
     alert('Error: ' + err.message)
   }
