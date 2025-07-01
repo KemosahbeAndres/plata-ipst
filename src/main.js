@@ -5,10 +5,15 @@ import { createPinia } from 'pinia'
 
 import App from './App.vue'
 import router from './router'
+import { auth } from './firebase/config'
 
-const app = createApp(App)
+let app
 
-app.use(createPinia())
-app.use(router)
-
-app.mount('#app')
+auth.onAuthStateChanged(() => {
+  if (!app) {
+    app = createApp(App)
+    app.use(createPinia())
+    app.use(router)
+    app.mount('#app')
+  }
+})

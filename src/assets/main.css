@@ -21,6 +21,10 @@ body {
   grid-template-columns: 1fr 7fr;
 }
 
+.grid > * {
+  height: 100vh;
+}
+
 .login-container .img-login {
   width: 100%;
   overflow: hidden;
