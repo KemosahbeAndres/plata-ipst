@@ -23,6 +23,16 @@ const router = createRouter({
       name: 'users',
       component: () => import('../views/UsersView.vue'),
       meta: { requireAuth: true, requiresAdmin: true }
+    },
+    {
+      path: '/asignaturas',
+      component: () => import('../views/AsignaturasView.vue'),
+      meta: { requiresAuth: true, requiresProfesor: true }
+    },
+    {
+      path: '/asignaturas/:id',
+      component: () => import('../views/AsignaturaDetailsView.vue'),
+      meta: { requiresAuth: true, requiresProfesor: true }
     }
   ],
 })
@@ -34,11 +44,17 @@ router.beforeEach((to, from, next) => {
     return next('/')
   }
 
+  if(to.meta.requiresProfesor && (user?.rol == 'profesor' || user?.rol == 'administrador') ) return next()
+
   if (to.meta.requiresGuest && user) {
     return next('/calendar')
   }
 
   if (to.meta.requiresAdmin && user?.rol !== 'administrador') {
+    return next('/calendar')
+  }
+
+  if ((to.meta.requiresProfesor && (user?.rol !== 'profesor' || user?.rol !== "administrador") )) {
     return next('/calendar')
   }
 

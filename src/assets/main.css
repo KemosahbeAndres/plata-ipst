@@ -30,6 +30,11 @@ body {
   overflow: hidden;
 }
 
+.asignatura-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
 a,
 .green {
   text-decoration: none;
