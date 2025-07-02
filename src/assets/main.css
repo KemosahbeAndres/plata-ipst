@@ -8,6 +8,10 @@ body {
   font-weight: normal;
   overflow: hidden;
 }
+html, body, #app {
+  height: 100%;
+  margin: 0;
+}
 
 .login-container {
   display: grid;
@@ -23,6 +27,18 @@ body {
 
 .grid > * {
   height: 100vh;
+}
+
+.fc {
+  max-width: 100%;
+}
+
+.fc .fc-scroller {
+  overflow-y: auto;
+}
+
+:deep(.fc) {
+  max-width: 100%;
 }
 
 .login-container .img-login {
