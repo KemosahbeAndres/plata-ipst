@@ -2,8 +2,8 @@
 <template>
     <div class="grid">
         <SidebarMenu />
-  <div class="container mt-4">
-    <h3>Registrar Usuario</h3>
+  <div class="container mx-4">
+    <h3 class="mb-4">Gestion de Usuarios</h3>
     <form @submit.prevent="registrarUsuario" class="row g-2">
       <div class="col-md-4">
         <input v-model="form.usuario" class="form-control" placeholder="Nombre de usuario">
