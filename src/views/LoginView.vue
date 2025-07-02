@@ -1,10 +1,16 @@
 <template>
   <div class="login-container mt-4">
     <div class="p-5">
-      <h2 class="mb-3">Iniciar Sesión</h2>
+      <img class="text-center" src="/src/assets/calendar.png" width="100" alt="" style="margin: auto;">
+      <h2 class="mb-2 text-center">  
+        Planificador Académico
+      </h2>
+      <p class="text-center">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quaerat eum provident molestiae. Nisi minima sequi cum rem omnis aut voluptatum, laudantium aspernatur corrupti, dolores deserunt ab dolorum assumenda! Et, eius!</p>
+     
+      <h2 class="mb-3 text-center" style="margin-top: 4em;">Iniciar Sesión</h2>
       <input class="form-control mb-2" @keypress.enter="login" v-model="email" placeholder="Correo">
       <input class="form-control mb-2" @keypress.enter="login" v-model="password" type="password" placeholder="Contraseña">
-      <button class="btn btn-primary" @click="login">Entrar</button>
+      <button class="btn btn-primary d-block w-100" @click="login">Entrar</button>
     </div>
     <div class="background">
         <img src="/src/assets/fondo01.jpg" alt="" class="img-login">
