@@ -2,7 +2,7 @@
 <template>
     <div class="grid">
         <SidebarMenu />
-  <div class="container mx-4">
+  <div class="container m-4 w-80 users-container">
     <h3 class="mb-4">Gestion de Usuarios</h3>
     <form @submit.prevent="registrarUsuario" class="row g-2">
       <div class="col-md-4">
@@ -46,19 +46,38 @@
             <th>RUT</th>
             <th>Teléfono</th>
             <th>Rol</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="u in usuarios" :key="u.id">
-            <td>{{ u.usuario }}</td>
+            <td>{{ u.usuario }}
+              <span v-if="u.id === currentUserId" class="badge bg-success">yo</span>
+            </td>
             <td>{{ u.nombre }}</td>
             <td>{{ u.apellido }}</td>
             <td>{{ u.rut }}</td>
             <td>{{ u.telefono }}</td>
             <td>{{ u.rol }}</td>
+            <td>
+            <button class="btn btn-sm btn-primary me-2" @click="editarUsuario(u)">Editar</button>
+            <button v-if="u.id != currentUserId"
+              class="btn btn-sm btn-danger"
+              @click="eliminarUsuario(u.id)"
+              :disabled="u.id === currentUserId"
+            >
+              Eliminar
+            </button>
+          </td>
           </tr>
         </tbody>
       </table>
+      <EditUserModal 
+        :visible="modalVisible"
+        :user="usuarioSeleccionado"
+        @submit="actualizarUsuario"
+        @close="modalVisible = false"
+      />
     </div>
   </div>
   </div>
@@ -67,8 +86,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { db } from '../firebase/config'
-import { collection, addDoc, onSnapshot } from 'firebase/firestore'
+import { collection, addDoc, onSnapshot, getDocs, deleteDoc, doc } from 'firebase/firestore'
 import SidebarMenu from '@/components/SidebarMenu.vue'
+import EditUserModal from '@/components/EditUserModal.vue'
 
 const form = ref({
   usuario: '',
@@ -81,6 +101,9 @@ const form = ref({
 })
 
 const usuarios = ref([])
+const currentUserId = ref(null)
+const modalVisible = ref(false)
+const usuarioSeleccionado = ref(null)
 
 const registrarUsuario = async () => {
   try {
@@ -100,10 +123,61 @@ const registrarUsuario = async () => {
   }
 }
 
-onMounted(() => {
+async function cargarUsuarios(){
   const usuariosRef = collection(db, 'usuarios')
   onSnapshot(usuariosRef, (snapshot) => {
     usuarios.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
   })
+
+  const currentUser = JSON.parse(sessionStorage.getItem('user'))
+  if (currentUser && currentUser.id) {
+    currentUserId.value = currentUser.id
+  }
+}
+
+async function eliminarUsuario(id) {
+  if (id === currentUserId.value) {
+    alert("No puedes eliminar tu propio usuario.")
+    return
+  }
+  try {
+    await deleteDoc(doc(db, 'usuarios', id))
+    usuarios.value = usuarios.value.filter(u => u.id !== id)
+  } catch (error) {
+    console.error('Error al eliminar usuario:', error)
+  }
+}
+
+function editarUsuario(user) {
+  
+  usuarioSeleccionado.value = { ...user }
+  console.log(usuarioSeleccionado.value)
+  modalVisible.value = true
+}
+
+async function actualizarUsuario(usuario) {
+  try {
+    const userRef = doc(db, 'usuarios', usuario.id)
+    await updateDoc(userRef, {
+      nombre: usuario.name,
+      usuario: usuario.email,
+      rol: usuario.role
+    })
+    await cargarUsuarios()
+    modalVisible.value = false
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error)
+  }
+}
+
+onMounted(() => {
+  cargarUsuarios()
 })
 </script>
+
+<style scoped>
+.users-container {
+  width: 90%;
+  margin: auto;
+}
+</style>

@@ -11,9 +11,6 @@
       <li class="nav-item">
         <router-link to="/calendar" class="nav-link text-white">Calendario</router-link>
       </li>
-      <li>
-        <router-link to="/agenda" class="nav-link text-white">Agenda</router-link>
-      </li>
       <li v-if="usuario?.rol === 'administrador'">
         <router-link to="/users" class="nav-link text-white">Usuarios</router-link>
       </li>

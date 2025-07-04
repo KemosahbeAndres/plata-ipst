@@ -1,17 +1,25 @@
 <template>
-  <div id="calendar-container">
+  <div class="contenido-agenda">
+    <TaskList :current-date="currentDate" :refreshTrigger="props.refreshKey"/>
+    <div id="calendar-container">
     <FullCalendar ref="calendarRef" :events="calendarEvents" :options="calendarOptions" />
+  </div>
   </div>
 </template>
 
 <script setup>
 import esLocale from '@fullcalendar/core/locales/es'
 
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, defineProps } from 'vue'
 import { db } from '../firebase/config'
 import { collection, onSnapshot } from 'firebase/firestore'
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
+import TaskList from './TaskList.vue'
+
+const props = defineProps({
+  refreshKey: Number
+})
 
 const eventsRef = collection(db, 'events')
 const calendarEvents = ref([])
@@ -25,7 +33,12 @@ const calendarOptions = {
   aspectRatio: 1.5, // Esto ayuda a controlar la proporción entre ancho y alto
   windowResize: true,
   locale: esLocale,
+  datesSet(arg){
+    currentDate.value = new Date(arg.view.currentStart)
+  }
 }
+
+const currentDate = ref(new Date())
 
 onMounted(() => {
   onSnapshot(eventsRef, (snapshot) => {
@@ -63,5 +76,10 @@ onMounted(() => {
 
 :deep(.fc-scroller) {
   overflow-y: auto;
+}
+
+.contenido-agenda {
+  display: grid;
+  grid-template-columns: 1fr 4fr;
 }
 </style>

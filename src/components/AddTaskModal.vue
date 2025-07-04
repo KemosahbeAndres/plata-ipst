@@ -4,7 +4,7 @@
       <div class="card p-4 shadow-sm">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2 class="mb-0">Agregar Tarea</h2>
-          <button class="btn-close" @click="close"></button>
+          <button class="btn-close" @click="close">x</button>
         </div>
         <form @submit.prevent="handleSubmit" class="row g-2 align-items-center">
           <div class="col-12">
@@ -24,6 +24,7 @@
           </div>
           <div class="col-12">
             <button class="btn btn-success w-100 mt-3">Agregar</button>
+            <button class="btn btn-danger w-100 mt-1" @click="close">Cancelar</button>
           </div>
         </form>
       </div>
@@ -38,7 +39,9 @@ import { db } from '@/firebase/config'
 
 const emit = defineEmits(['submit', 'close'])
 const props = defineProps({
-  visible: Boolean
+  visible: Boolean,
+  currentDate: Date,
+  refreshTrigger: Number
 })
 
 const title = ref('')

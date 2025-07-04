@@ -41,7 +41,7 @@ const login = async () => {
       const token = crypto.randomUUID()
       await updateDoc(docRef, { tokenSesion: token})
 
-      sessionStorage.setItem('user', JSON.stringify({ ...perfil, token }))
+      sessionStorage.setItem('user', JSON.stringify({ ...perfil, token, id: docRef.id }))
       router.push('/calendar')
     } else {
       alert('Credenciales incorrectas')
