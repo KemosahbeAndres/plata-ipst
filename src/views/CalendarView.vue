@@ -20,7 +20,6 @@ import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import Calendar from '../components/Calendar.vue'
 import SidebarMenu from '@/components/SidebarMenu.vue'
 import AddTaskModal from '@/components/AddTaskModal.vue'
-import TaskList from '@/components/TaskList.vue'
 
 const title = ref('')
 const date = ref('')

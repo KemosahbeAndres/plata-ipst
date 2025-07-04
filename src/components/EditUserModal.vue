@@ -1,23 +1,35 @@
 <template>
-  <div v-if="visible" class="modal-overlay" @click.self="close">
+  <div v-if="visible && localUser" class="modal-overlay" @click.self="close">
     <div class="modal-panel">
       <div class="card p-4 shadow-sm">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h2 class="mb-0">Editar Usuario</h2>
-          <button class="btn-close" @click="close">x</button>
+          <button class="btn-close" @click="close"></button>
         </div>
         <form @submit.prevent="handleSubmit" class="row g-3">
           <div class="col-12">
             <label class="form-label">Nombre</label>
-            <input v-model="editedUser.name" type="text" class="form-control" />
+            <input v-model="localUser.nombre" type="text" class="form-control" />
           </div>
           <div class="col-12">
-            <label class="form-label">Email</label>
-            <input v-model="editedUser.email" type="email" class="form-control" />
+            <label class="form-label">Apellido</label>
+            <input v-model="localUser.apellido" type="text" class="form-control" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Usuario</label>
+            <input v-model="localUser.usuario" type="text" class="form-control" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">RUT</label>
+            <input v-model="localUser.rut" type="text" class="form-control" />
+          </div>
+          <div class="col-12">
+            <label class="form-label">Teléfono</label>
+            <input v-model="localUser.telefono" type="text" class="form-control" />
           </div>
           <div class="col-12">
             <label class="form-label">Rol</label>
-            <select v-model="editedUser.role" class="form-select">
+            <select v-model="localUser.rol" class="form-select">
               <option value="administrador">Administrador</option>
               <option value="profesor">Profesor</option>
               <option value="estudiante">Estudiante</option>
@@ -33,9 +45,9 @@
 </template>
 
 <script setup>
-import { ref, watch, defineProps, defineEmits, onMounted } from 'vue'
+import { ref, watch, defineProps, defineEmits } from 'vue'
+import { updateDoc, doc } from 'firebase/firestore'
 import { db } from '@/firebase/config'
-import { doc } from 'firebase/firestore'
 
 const props = defineProps({
   visible: Boolean,
@@ -44,28 +56,40 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'submit'])
 
-const editedUser = ref({})
+const localUser = ref(null)
 
-watch(() => props.user, (nuevo) => {
-    console.log(" watch - ", props.user)
-  editedUser.value = { ...nuevo }
-}, { immediate: true })
+watch(
+  () => props.user,
+  (nuevo) => {
+    if (nuevo) {
+      localUser.value = { ...nuevo }
+    }
+  },
+  { immediate: true }
+)
 
 function handleSubmit() {
-    
-  //emit('submit', editedUser.value)
-  close()
+  if (localUser.value && localUser.value.id) {
+    try {
+      const userRef = doc(db, 'usuarios', localUser.value.id)
+        updateDoc(userRef, {
+        nombre: localUser.value.nombre,
+        apellido: localUser.value.apellido,
+        usuario: localUser.value.usuario,
+        rut: localUser.value.rut,
+        telefono: localUser.value.telefono,
+        rol: localUser.value.rol
+      })
+      close()
+    } catch (error) {
+      console.error('Error al guardar cambios:', error)
+    }
+  }
 }
 
 function close() {
   emit('close')
 }
-
-onMounted(()=> {
-    console.log(props)
-    const userRef = doc(db, 'usuarios', props.user)
-    editedUser.value = userRef
-})
 </script>
 
 <style scoped>

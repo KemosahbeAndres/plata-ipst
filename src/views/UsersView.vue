@@ -86,7 +86,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { db } from '../firebase/config'
-import { collection, addDoc, onSnapshot, getDocs, deleteDoc, doc } from 'firebase/firestore'
+import { collection, addDoc, onSnapshot, deleteDoc, doc } from 'firebase/firestore'
 import SidebarMenu from '@/components/SidebarMenu.vue'
 import EditUserModal from '@/components/EditUserModal.vue'
 
@@ -156,18 +156,7 @@ function editarUsuario(user) {
 }
 
 async function actualizarUsuario(usuario) {
-  try {
-    const userRef = doc(db, 'usuarios', usuario.id)
-    await updateDoc(userRef, {
-      nombre: usuario.name,
-      usuario: usuario.email,
-      rol: usuario.role
-    })
-    await cargarUsuarios()
-    modalVisible.value = false
-  } catch (error) {
-    console.error('Error al actualizar usuario:', error)
-  }
+  
 }
 
 onMounted(() => {
