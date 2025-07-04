@@ -17,7 +17,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue'
 import { db } from '@/firebase/config'
-import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore'
+import { collection, doc, getDoc, getDocs, query, where, deleteDoc } from 'firebase/firestore'
 
 const props = defineProps({
   currentDate: { type: Date, required: true }, // fecha del mes actual mostrado en FullCalendar
@@ -26,6 +26,18 @@ const props = defineProps({
 
 const tareas = ref([])
 const asignaturasMap = ref({})
+const asignaturasUsuario = ref([])
+
+async function cargarAsignaturasUsuario() {
+  const usuario = JSON.parse(sessionStorage.getItem('user'))
+  if (!usuario?.id) return
+  const userRef = doc(db, 'usuarios', usuario.id)
+  const userSnap = await getDoc(userRef)
+  if (userSnap.exists()) {
+    const data = userSnap.data()
+    asignaturasUsuario.value = data.asignaturas || []
+  }
+}
 
 async function cargarAsignaturas() {
   const snapshot = await getDocs(collection(db, 'asignaturas'))
@@ -55,7 +67,7 @@ async function cargarTareasDelMes(fecha) {
       ...data,
       subjectName: asignaturasMap.value[data.subjectId] || null
     }
-  })
+  }).filter(t => asignaturasUsuario.value.includes(t.subjectId))
 }
 
 async function eliminarTarea(id) {
@@ -68,6 +80,7 @@ async function eliminarTarea(id) {
 }
 
 watch(() => props.currentDate, async (nuevoMes) => {
+    await cargarAsignaturasUsuario()
   await cargarAsignaturas()
   await cargarTareasDelMes(nuevoMes)
 }, { immediate: true })

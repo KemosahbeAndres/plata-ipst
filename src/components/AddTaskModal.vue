@@ -34,7 +34,7 @@
 
 <script setup>
 import { ref, onMounted, defineEmits, defineProps } from 'vue'
-import { getDocs, collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, getDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore'
 import { db } from '@/firebase/config'
 
 const emit = defineEmits(['submit', 'close'])
@@ -49,13 +49,29 @@ const date = ref('')
 const subject = ref('')
 const asignaturas = ref([])
 
-onMounted(async () => {
-  try {
-    const snapshot = await getDocs(collection(db, 'asignaturas'))
-    asignaturas.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-  } catch (error) {
-    console.error('Error al obtener asignaturas:', error)
+async function cargarAsignaturasInscritas() {
+  const usuario = JSON.parse(sessionStorage.getItem('user'))
+  if (!usuario?.id) return
+
+  const userRef = doc(db, 'usuarios', usuario.id)
+  const userSnap = await getDoc(userRef)
+
+  if (userSnap.exists()) {
+    const ids = userSnap.data().asignaturas || []
+
+    const fetched = await Promise.all(
+      ids.map(async (asigId) => {
+        const asigSnap = await getDoc(doc(db, 'asignaturas', asigId))
+        return asigSnap.exists() ? { id: asigSnap.id, ...asigSnap.data() } : null
+      })
+    )
+
+    asignaturas.value = fetched.filter(Boolean)
   }
+}
+
+onMounted(async () => {
+  cargarAsignaturasInscritas()
 })
 
 async function handleSubmit() {

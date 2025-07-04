@@ -17,6 +17,9 @@
       <li v-if="usuario?.rol === 'profesor' || usuario?.rol === 'administrador'">
         <router-link to="/asignaturas" class="nav-link text-white">Asignaturas</router-link>
       </li>
+      <li>
+        <router-link to="/misasignaturas" class="nav-link text-white">Mis Asignaturas</router-link>
+      </li>
     </ul>
     <div class="mt-auto">
       <button @click="logout" class="btn btn-outline-light w-100">Cerrar sesión</button>

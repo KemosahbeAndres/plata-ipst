@@ -30,6 +30,11 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresProfesor: true }
     },
     {
+      path: '/misasignaturas',
+      component: () => import('../views/AsignaturasEstudiantes.vue'),
+      meta: { requiresAuth: true }
+    },
+    {
       path: '/asignaturas/:id',
       component: () => import('../views/AsignaturaDetailsView.vue'),
       meta: { requiresAuth: true, requiresProfesor: true }
