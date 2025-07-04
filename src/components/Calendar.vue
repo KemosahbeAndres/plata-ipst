@@ -1,6 +1,6 @@
 <template>
   <div id="calendar-container">
-    <FullCalendar :events="calendarEvents" :options="calendarOptions" />
+    <FullCalendar ref="calendarRef" :events="calendarEvents" :options="calendarOptions" />
   </div>
 </template>
 
@@ -16,6 +16,8 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 const eventsRef = collection(db, 'events')
 const calendarEvents = ref([])
 
+const calendarRef = ref(null)
+
 const calendarOptions = {
   plugins: [dayGridPlugin],
   initialView: 'dayGridMonth',
@@ -30,6 +32,12 @@ onMounted(() => {
     const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
     calendarEvents.value = data.map(e => ({ title: e.title, date: e.date }))
   })
+
+  setTimeout(() => {
+    const calendarApi = calendarRef.value.getApi()
+    calendarApi.updateSize()
+  }, 100)
+
 })
 </script>
 
@@ -41,6 +49,10 @@ onMounted(() => {
   padding: 1rem;
   box-sizing: border-box;
   overflow: hidden;
+}
+
+.fc-col-header {
+  width: auto !important;
 }
 
 /* Forzar al calendario a ocupar su espacio */
